@@ -1,0 +1,6 @@
+pong:
+  name: pong
+  scores_count: 2
+
+tetris:
+  name: tetris

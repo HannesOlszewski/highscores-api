@@ -1,0 +1,9 @@
+<% content_for :title, "Rename #{@game.name_in_database}" %>
+<% content_for :page_class, "page-narrow" %>
+
+<div class="panel">
+  <h1>Rename <%= @game.name_in_database %></h1>
+  <p>Scores stay with the game.</p>
+
+  <%= render "form", game: @game, submit_label: "Rename game", cancel_path: game_path(@game) %>
+</div>

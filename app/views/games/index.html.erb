@@ -1,0 +1,39 @@
+<% content_for :title, "Games" %>
+
+<div class="page-header">
+  <h1>Games</h1>
+  <%= link_to "New game", new_game_path, class: "button button-primary" %>
+</div>
+
+<% if @games.any? %>
+  <ul class="game-grid" id="games">
+    <% @games.each do |game| %>
+      <% top = game.leaderboard.first %>
+      <li>
+        <%= link_to game_path(game), class: "game-card" do %>
+          <div class="screen">
+            <div class="lcd">
+              <%= lcd_number top&.score, digits: 8 %>
+              <div class="lcd-caption">
+                <% if top %>
+                  <span>HI</span><span><%= top.name %></span>
+                <% else %>
+                  <span>No scores yet</span>
+                <% end %>
+              </div>
+            </div>
+          </div>
+          <div class="label">
+            <strong><%= game.name %></strong>
+            <span><%= game.scores_count %> of <%= Game::LEADERBOARD_SIZE %></span>
+          </div>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <div class="empty">
+    <p>No games yet. Create one to get its scores API.</p>
+    <%= link_to "New game", new_game_path, class: "button button-primary" %>
+  </div>
+<% end %>

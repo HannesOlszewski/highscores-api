@@ -1,0 +1,11 @@
+alice:
+  game: pong
+  name: alice
+  score: 300
+  updated_at: <%= 2.days.ago.to_fs(:db) %>
+
+bob:
+  game: pong
+  name: bob
+  score: 100
+  updated_at: <%= 1.day.ago.to_fs(:db) %>

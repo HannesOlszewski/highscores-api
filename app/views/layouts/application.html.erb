@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
   <head>
-    <title><%= content_for(:title) || "Highscores Api" %></title>
+    <title><%= [ content_for(:title), "Highscores" ].compact.join(" · ") %></title>
+
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Highscores Api">
+    <meta name="application-name" content="Highscores">
     <meta name="mobile-web-app-capable" content="yes">
+
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -24,6 +27,20 @@
   </head>
 
   <body>
-    <%= yield %>
+    <header class="masthead">
+      <%= link_to root_path, class: "wordmark" do %>High<span>scores</span><% end %>
+      <%= button_to "Sign out", session_path, method: :delete, class: "button button-quiet" if authenticated? %>
+    </header>
+
+    <% if notice || alert %>
+      <div class="flash" role="status">
+        <%= tag.div(notice, class: "notice") if notice %>
+        <%= tag.div(alert, class: "alert") if alert %>
+      </div>
+    <% end %>
+
+    <main class="page <%= yield :page_class %>">
+      <%= yield %>
+    </main>
   </body>
 </html>

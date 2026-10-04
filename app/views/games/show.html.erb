@@ -1,0 +1,91 @@
+<% content_for :title, @game.name %>
+<% digits = [ 8, *@scores.map { |score| score.score.to_s.length } ].max %>
+
+<div class="page-header">
+  <div>
+    <%= link_to "← All games", games_path, class: "eyebrow" %>
+    <h1><%= @game.name %></h1>
+  </div>
+  <div class="actions">
+    <%= link_to "Rename", edit_game_path(@game), class: "button" %>
+    <%= button_to "Delete game", @game, method: :delete, class: "button button-quiet",
+          form: { data: { turbo_confirm: "Delete #{@game.name} and all #{@game.scores_count} scores? Game builds using its API will get 404 errors." } } %>
+  </div>
+</div>
+
+<div class="game-layout">
+  <section class="leaderboard" aria-labelledby="leaderboard-heading">
+    <h2 id="leaderboard-heading">Leaderboard</h2>
+
+    <div class="screen">
+      <div class="lcd">
+        <% if @scores.any? %>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Rank</th>
+                <th scope="col">Player</th>
+                <th scope="col" class="score">Score</th>
+                <th scope="col"><span class="visually-hidden">Remove</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @scores.each.with_index(1) do |score, rank| %>
+                <tr>
+                  <td class="rank"><%= lcd_number rank, digits: 2 %></td>
+                  <td class="name" title="<%= score.name %>"><%= score.name %></td>
+                  <td class="score"><%= lcd_number score.score, digits: digits %></td>
+                  <td class="remove">
+                    <%= button_to "×", game_score_path(@game, score), method: :delete,
+                          aria: { label: "Remove #{score.name}’s score" },
+                          form: { data: { turbo_confirm: "Remove #{score.name}’s score of #{score.score}?" } } %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% else %>
+          <div class="lcd-empty">
+            <%= lcd_number nil, digits: digits %>
+            <p>No scores yet. Submit the first one with the POST request.</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <p class="leaderboard-footnote">
+      <%= @scores.size %> of <%= Game::LEADERBOARD_SIZE %> places taken. Each player keeps their best score;
+      once the board is full, a new score has to beat the last place to get on it.
+    </p>
+  </section>
+
+  <section class="api" aria-labelledby="api-heading">
+    <h2 id="api-heading">API</h2>
+
+    <div class="endpoint">
+      <div class="endpoint-line"><span class="method">GET</span><code><%= game_scores_url(@game) %></code></div>
+      <p>Returns the leaderboard as a JSON array, best score first.</p>
+      <div class="snippet">
+        <pre>[
+  { "rank": 1, "name": "alice", "score": 1200 },
+  { "rank": 2, "name": "bob", "score": 950 }
+]</pre>
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-line"><span class="method">POST</span><code><%= game_scores_url(@game) %></code></div>
+      <p>
+        Submits a player's score. The response has the player's best score and rank, or a
+        <code>null</code> rank if it didn't make the leaderboard.
+      </p>
+      <div class="snippet" data-controller="clipboard">
+        <button type="button" class="copy" data-action="clipboard#copy" data-clipboard-target="button">Copy</button>
+        <pre data-clipboard-target="source">curl -X POST \
+  <%= game_scores_url(@game) %> \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "alice", "score": 1200 }'</pre>
+      </div>
+    </div>
+  </section>
+</div>

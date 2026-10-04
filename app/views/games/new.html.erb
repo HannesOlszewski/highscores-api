@@ -1,0 +1,9 @@
+<% content_for :title, "New game" %>
+<% content_for :page_class, "page-narrow" %>
+
+<div class="panel">
+  <h1>New game</h1>
+  <p>Each game gets its own leaderboard of the best <%= Game::LEADERBOARD_SIZE %> scores.</p>
+
+  <%= render "form", game: @game, submit_label: "Create game", cancel_path: games_path %>
+</div>
