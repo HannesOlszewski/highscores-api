@@ -11,6 +11,10 @@ class GameTest < ActiveSupport::TestCase
     assert_not Game.new(name: "pong").valid?
   end
 
+  test "new games get an API key" do
+    assert_match(/\A\w{24}\z/, Game.create!(name: "asteroids").api_key)
+  end
+
   test "to_param keeps the persisted name while a rename is invalid" do
     @game.name = "not valid"
     assert_equal "pong", @game.to_param

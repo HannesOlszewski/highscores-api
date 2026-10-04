@@ -76,16 +76,34 @@
     <div class="endpoint">
       <div class="endpoint-line"><span class="method">POST</span><code><%= game_scores_url(@game) %></code></div>
       <p>
-        Submits a player's score. The response has the player's best score and rank, or a
-        <code>null</code> rank if it didn't make the leaderboard.
+        Submits a player's score, authenticated with the game's API key. The response has the player's
+        best score and rank, or a <code>null</code> rank if it didn't make the leaderboard.
       </p>
       <div class="snippet" data-controller="clipboard">
         <button type="button" class="copy" data-action="clipboard#copy" data-clipboard-target="button">Copy</button>
         <pre data-clipboard-target="source">curl -X POST \
   <%= game_scores_url(@game) %> \
+  -H "Authorization: Bearer $HIGHSCORES_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{ "name": "alice", "score": 1200 }'</pre>
       </div>
+    </div>
+
+    <div class="endpoint">
+      <h3 id="api-key-heading">API key</h3>
+      <div class="api-key" data-controller="clipboard">
+        <details>
+          <summary><span class="when-closed">Show key</span><span class="when-open">Hide key</span></summary>
+          <code data-clipboard-target="source"><%= @game.api_key %></code>
+        </details>
+        <button type="button" class="copy" data-action="clipboard#copy" data-clipboard-target="button">Copy</button>
+      </div>
+      <p>
+        Anyone with this key can submit scores, and it can be extracted from a game build.
+        If it leaks, generate a new one and ship an update.
+      </p>
+      <%= button_to "Generate new key", game_api_key_path(@game), method: :patch, class: "button",
+            form: { data: { turbo_confirm: "Generate a new API key? Game builds using the current key won't be able to submit scores until they're updated." } } %>
     </div>
   </section>
 </div>

@@ -1,5 +1,7 @@
 # Public JSON API for reading and submitting a game's highscores.
 class ScoresController < ActionController::API
+  include ActionController::HttpAuthentication::Token::ControllerMethods
+
   # The request body is { "name": ..., "score": ... }; wrapping it under params[:score] would clobber the score.
   wrap_parameters false
 
@@ -7,6 +9,7 @@ class ScoresController < ActionController::API
     with: -> { render json: { error: "Too many submissions, try again later" }, status: :too_many_requests }
 
   before_action :set_game
+  before_action :authenticate_game, only: :create
 
   rescue_from ActiveRecord::RecordNotFound do
     render json: { error: "Game not found" }, status: :not_found
@@ -35,5 +38,16 @@ class ScoresController < ActionController::API
   private
     def set_game
       @game = Game.find_by!(name: params[:game_name])
+    end
+
+    def authenticate_game
+      authenticated = authenticate_with_http_token do |api_key|
+        ActiveSupport::SecurityUtils.secure_compare(api_key, @game.api_key)
+      end
+
+      unless authenticated
+        response.headers["WWW-Authenticate"] = %(Bearer realm="highscores")
+        render json: { error: "Missing or invalid API key" }, status: :unauthorized
+      end
     end
 end

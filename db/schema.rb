@@ -10,12 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_04_202935) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_04_204224) do
   create_table "games", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "scores_count", default: 0, null: false
+    t.string "api_key", null: false
+    t.index ["api_key"], name: "index_games_on_api_key", unique: true
     t.index ["name"], name: "unique_games", unique: true
   end
 

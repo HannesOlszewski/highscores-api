@@ -1,6 +1,8 @@
 pong:
   name: pong
+  api_key: pong-api-key
   scores_count: 2
 
 tetris:
   name: tetris
+  api_key: tetris-api-key

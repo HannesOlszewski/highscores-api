@@ -74,4 +74,20 @@ class GamesControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to new_session_path
   end
+
+  test "generate a new API key" do
+    sign_in_as users(:one)
+
+    assert_changes -> { @game.reload.api_key } do
+      patch game_api_key_path(@game)
+    end
+    assert_redirected_to game_path(@game)
+  end
+
+  test "generating a new API key requires signing in" do
+    assert_no_changes -> { @game.reload.api_key } do
+      patch game_api_key_path(@game)
+    end
+    assert_redirected_to new_session_path
+  end
 end

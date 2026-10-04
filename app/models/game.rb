@@ -3,6 +3,9 @@ class Game < ApplicationRecord
 
   has_many :scores, dependent: :delete_all
 
+  # Game builds send this as a bearer token to submit scores.
+  has_secure_token :api_key
+
   normalizes :name, with: ->(name) { name.strip }
 
   # The name is the game's identifier in API URLs (/games/<name>/scores), so keep it URL-safe.
